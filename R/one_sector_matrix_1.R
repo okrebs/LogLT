@@ -186,19 +186,20 @@ calc_cf_log_m_1 <- function(J, R, pi_I, pi_F, gamma, T_hat, tau_hat_I,
   XZ3pp <- Xpp %*% (Z3 + Z3p)
 
   ######### result C_hat_1 using X' psuedo inverse checked correct
-  C_hat_1 <- (XZ1 - (Y1 + (Y2 %*% XZ1))) %*% (T_hat) +
-    (Y2 %*% Xp - Xp) %*% diag(B %*% t(tau_hat_I)) +
-    (Y2 %*% Xp - Xp) %*% diag(Bp %*% t(tau_hat_F)) +
-    (XZ3 - (Y3 + (Y2 %*% XZ3))) %*% diag(crossprod(pi_I, tau_hat_I)) +
-    ((Xp %*% Z4p) - (IJ + (Y2 %*% Xp %*% Z4p))) %*%
-    diag(crossprod(pi_F, tau_hat_F))
+  calc_C_hat <- function(XZ1_, XZ3_, Xp_, Y1, Y2, Y3, T_hat, B, Bp, tau_hat_I,
+                         tau_hat_F, pi_I, pi_F, Z4p, IJ) {
+    (XZ1_ - (Y1 + (Y2 %*% XZ1_))) %*% (T_hat) +
+      (Y2 %*% Xp_ - Xp_) %*% diag(B %*% t(tau_hat_I)) +
+      (Y2 %*% Xp_ - Xp_) %*% diag(Bp %*% t(tau_hat_F)) +
+      (XZ3_ - (Y3 + (Y2 %*% XZ3_))) %*% diag(crossprod(pi_I, tau_hat_I)) +
+      ((Xp_ %*% Z4p) - (IJ + (Y2 %*% Xp_ %*% Z4p))) %*%
+      diag(crossprod(pi_F, tau_hat_F))
+  }
 
-  C_hat_2 <- (XZ1pp - (Y1 + (Y2 %*% XZ1pp))) %*% (T_hat) +
-    (Y2 %*% Xpp - Xpp) %*% diag(B %*% t(tau_hat_I)) +
-    (Y2 %*% Xpp - Xpp) %*% diag(Bp %*% t(tau_hat_F)) +
-    (XZ3pp - (Y3 + (Y2 %*% XZ3pp))) %*% diag(crossprod(pi_I, tau_hat_I)) +
-    ((Xpp %*% Z4p) - (IJ + (Y2 %*% Xpp %*% Z4p))) %*%
-    diag(crossprod(pi_F, tau_hat_F))
+  C_hat_1 <- calc_C_hat(XZ1, XZ3, Xp, Y1, Y2, Y3, T_hat, B, Bp, tau_hat_I,
+                        tau_hat_F, pi_I, pi_F, Z4p, IJ)
+  C_hat_2 <- calc_C_hat(XZ1pp, XZ3pp, Xpp, Y1, Y2, Y3, T_hat, B, Bp, tau_hat_I,
+                        tau_hat_F, pi_I, pi_F, Z4p, IJ)
 
   data.frame(C_hat_1, C_hat_2)
 }
