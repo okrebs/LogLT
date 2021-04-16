@@ -63,6 +63,34 @@ calc_cf <- function(data,
                     method = "automatic",
                     nthreads = 1L) {
 
+  if(method %in% c("linearized", "pseudo_linearized")) {
+    if(dim(data[["R"]])[2] > 1) {
+      stop("Log linearized model works with 1 sector only")
+    }
+    # extract from list
+    R <- data["R"]
+    pi <- data[["pi"]]
+    gamma <- as.vector(simple_data[["gamma_js"]])
+
+    # and reformat
+    J <- dim(R)[1]
+    pi_I <- matrix(pi[1:J^2], nrow = J, ncol = J)
+    pi_F <- matrix(pi[(J^2 + 1):(J^2 + J^2)], nrow = J, ncol = J)
+    T_hat <- shocks[["T_hat"]]
+    tau_hat <- shocks[["tau_hat"]]
+    tau_hat_I <- matrix(tau_hat[1:(J^2)], nrow = J, ncol = J)
+    tau_hat_F <- matrix(tau_hat[(J^2 + 1):(J^2 + J^2)], nrow = J, ncol = J)
+
+    if(method == "pseudo_linearized") {
+      pseudo = TRUE
+    } else {
+      pseudo = FALSE
+    }
+    return(
+      calc_cf_logl(J, R, pi_I, pi_F, gamma, T_hat, tau_hat_I, tau_hat_F,
+                   parameters$epsilon, use_pseudo = pseudo)
+    )
+  }
   if (!all(parameters$mobility %in% c("perfect", "imperfect", "immobile"))) {
     print(paste0("Invalid mobility argument (allowed are only \"perfect\",)",
                  "\"imperfect\", \"immobile\"). Assuming perfect mobility."))
