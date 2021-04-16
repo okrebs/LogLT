@@ -199,5 +199,5 @@ calc_cf_log_m_1=function(J,R,pi_I,pi_F,gamma,T_hat,tau_hat_I,tau_hat_F,epsilon){
   C_hat_2=((XZ1pp-(Y1+(Y2%*%XZ1pp)))%*%(T_hat))+((Y2%*%Xpp-Xpp)%*%diag(B%*%t(tau_hat_I)))+((Y2%*%Xpp-Xpp)%*%diag(Bp%*%t(tau_hat_F)))+
     ((XZ3pp-(Y3+(Y2%*%XZ3pp)))%*%(diag(crossprod(pi_I,tau_hat_I))))+(((Xpp%*%Z4p)-(IJ+(Y2%*%Xpp%*%Z4p)))%*%diag(crossprod(pi_F,tau_hat_F)))
 
-  return(data.frame(C_hat_1,C_hat_2))
+  data.frame(C_hat_1,C_hat_2)
 }
