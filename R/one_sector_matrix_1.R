@@ -40,7 +40,6 @@
 #'   \describe{
 #'     \item{T_hat}{technological shock}}
 #'     \item{tau_hat}{tariff shocks that may affect both importer and exporter}
-#' @importFrom MASS ginv
 #' @return after computing all X,X',A,Ap,Y1,Y1p,Y2,Y2p,B,Bp,Z1,Z1p,Z2,Z2p
 #' Z3,Z3p,Z4p,Y3, the function returns C_hat_1 and C_hat_2 based on psuedo and normalized X'
 
@@ -74,7 +73,7 @@
 #'      tau_hat_F=matrix(tau_hat[(J*J)+1:(J*J)+(J*J)],nrow=J,ncol=J)
 
 calc_cf_log_m_1 <- function(J, R, pi_I, pi_F, gamma, T_hat, tau_hat_I,
-                            tau_hat_F, epsilon) {
+                            tau_hat_F, epsilon, use_pseudo = FALSE) {
   # options(digits=22) this only changes the number of digits that R prints but
   # not precision. Without extra packages you are limited to ~15-16 digits of
   # precision
@@ -161,32 +160,23 @@ calc_cf_log_m_1 <- function(J, R, pi_I, pi_F, gamma, T_hat, tau_hat_I,
   ######### matrix X'? using normalized def with Q
   gR <- R * gamma
   Q <- matrix(rep(gR, each = J), ncol = J, byrow = FALSE)
-  Xp <- solve(IJ - (Z2 + Z2P) - Q)
 
-  ######### matrix X'? using psuedo inverse
-  Xpp <- ginv(IJ - Z2 - Z2P)
-  # IS THIS STILL NECESSARY?  pinv(IJ-Z2-Z2P) #same result as ginv
+  if(use_pseudo) {
+    ######### matrix X'? using psuedo inverse
+    Xp <- MASS::ginv(IJ - Z2 - Z2P)
+  } else {
+    Xp <- solve(IJ - (Z2 + Z2P) - Q)
+  }
 
   XZ1 <- Xp %*% (Z1 + Z1p)
   XZ3 <- Xp %*% (Z3 + Z3p)
-  XZ1pp <- Xpp %*% (Z1 + Z1p)
-  XZ3pp <- Xpp %*% (Z3 + Z3p)
 
-  ######### result C_hat_1 using X' psuedo inverse checked correct
-  calc_C_hat <- function(XZ1_, XZ3_, Xp_, Y1, Y2, Y3, T_hat, B, Bp, tau_hat_I,
-                         tau_hat_F, pi_I, pi_F, Z4p, IJ) {
-    (XZ1_ - (Y1 + Y2 %*% XZ1_)) %*% T_hat +
-      (Y2 %*% Xp_ - Xp_) %*% diag(B %*% t(tau_hat_I)) +
-      (Y2 %*% Xp_ - Xp_) %*% diag(Bp %*% t(tau_hat_F)) +
-      (XZ3_ - (Y3 + (Y2 %*% XZ3_))) %*% diag(crossprod(pi_I, tau_hat_I)) +
-      ((Xp_ %*% Z4p) - (IJ + Y2 %*% Xp_ %*% Z4p)) %*%
+  # return C_hat
+  (XZ1 - (Y1 + Y2 %*% XZ1)) %*% T_hat +
+      (Y2 %*% Xp - Xp) %*% diag(B %*% t(tau_hat_I)) +
+      (Y2 %*% Xp - Xp) %*% diag(Bp %*% t(tau_hat_F)) +
+      (XZ3 - (Y3 + (Y2 %*% XZ3))) %*% diag(crossprod(pi_I, tau_hat_I)) +
+      ((Xp %*% Z4p) - (IJ + Y2 %*% Xp %*% Z4p)) %*%
       diag(crossprod(pi_F, tau_hat_F))
-  }
 
-  C_hat_1 <- calc_C_hat(XZ1, XZ3, Xp, Y1, Y2, Y3, T_hat, B, Bp, tau_hat_I,
-                        tau_hat_F, pi_I, pi_F, Z4p, IJ)
-  C_hat_2 <- calc_C_hat(XZ1pp, XZ3pp, Xpp, Y1, Y2, Y3, T_hat, B, Bp, tau_hat_I,
-                        tau_hat_F, pi_I, pi_F, Z4p, IJ)
-
-  data.frame(C_hat_1, C_hat_2)
 }
