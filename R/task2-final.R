@@ -116,11 +116,6 @@
 
 
 calc_cf_log_t2=function(simple_data,shocks,parameters){
-  ####setting the number of ideal digits
-  #### note that the maximum accuracy is 22nd decimal
-
-
-  options(digits=22)
 
   #####################################################
   ########### step 1: decomposition of the inputs to ##
