@@ -72,7 +72,7 @@
 #'      tau_hat_I=matrix(tau_hat[1:(J*J)],nrow=J,ncol=J)
 #'      tau_hat_F=matrix(tau_hat[(J*J)+1:(J*J)+(J*J)],nrow=J,ncol=J)
 
-calc_cf_log_m_1 <- function(J, R, pi_I, pi_F, gamma, T_hat, tau_hat_I,
+calc_cf_logl <- function(J, R, pi_I, pi_F, gamma, T_hat, tau_hat_I,
                             tau_hat_F, epsilon, use_pseudo = FALSE) {
   # options(digits=22) this only changes the number of digits that R prints but
   # not precision. Without extra packages you are limited to ~15-16 digits of
