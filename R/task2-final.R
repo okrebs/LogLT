@@ -116,22 +116,6 @@
 
 
 calc_cf_log_t2=function(simple_data,shocks,parameters){
-
-
-
-  ############################################################
-  ############### loading necessary libraries ################
-  ############################################################
-
-  library(MASS)
-  library(pracma)
-  library(dplyr)
-  library(devtools)
-  library(blockmatrix)
-  library(matrixcalc)
-  library(migest)
-  library(Hmisc)
-
   ####setting the number of ideal digits
   #### note that the maximum accuracy is 22nd decimal
 
@@ -361,7 +345,7 @@ calc_cf_log_t2=function(simple_data,shocks,parameters){
     nth2effect=list();
 
     while(converg2>(10^(-20))) {
-      m5[i+1]=list(matrix.power(M,i));
+      m5[i+1]=list(M %^% i);
 
       a5=apply(simplify2array(m5), c(1,2), sum)
       converg2=colSums(matrix(colSums(apply(z-(a5),c(1,2),'^',2))))
