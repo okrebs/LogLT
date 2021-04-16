@@ -73,130 +73,130 @@
 #'      tau_hat_I=matrix(tau_hat[1:(J*J)],nrow=J,ncol=J)
 #'      tau_hat_F=matrix(tau_hat[(J*J)+1:(J*J)+(J*J)],nrow=J,ncol=J)
 
-calc_cf_log_m_1=function(J,R,pi_I,pi_F,gamma,T_hat,tau_hat_I,tau_hat_F,epsilon){
+calc_cf_log_m_1<-function(J,R,pi_I,pi_F,gamma,T_hat,tau_hat_I,tau_hat_F,epsilon){
 
   options(digits=22)
 
-  diaggamma=diag(c(gamma));  ###### diagonal matrix of gamma
+  diaggamma<-diag(c(gamma));  ###### diagonal matrix of gamma
 
-  IJ=diag(J)                 ###### Identity matrix
+  IJ<-diag(J)                 ###### Identity matrix
 
-  Igammadiag=IJ-diaggamma    ###### Identity-diaggama
+  Igammadiag<-IJ-diaggamma    ###### Identity-diaggama
 
-  pi_Igamma=crossprod(pi_I,Igammadiag)  ###### pi_I'(identity-diaggama)
-  pi_Fgamma=crossprod(pi_F,Igammadiag)  ###### pi_F'(identity-diaggama)
-  col=matrix(colSums(pi_I),ncol=2)     ###### vector w elements from pi_I pi11+pi21, pi12+pi22
-  colF=matrix(colSums(pi_F),ncol=2)    ###### vector w elements from pi_F pi11+pi21, pi12+pi22
+  pi_Igamma<-crossprod(pi_I,Igammadiag)  ###### pi_I'(identity-diaggama)
+  pi_Fgamma<-crossprod(pi_F,Igammadiag)  ###### pi_F'(identity-diaggama)
+  col<-matrix(colSums(pi_I),ncol=2)     ###### vector w elements from pi_I pi11+pi21, pi12+pi22
+  colF<-matrix(colSums(pi_F),ncol=2)    ###### vector w elements from pi_F pi11+pi21, pi12+pi22
 
 # step 1 Matrix X calc
-  X=solve(IJ-pi_Igamma)   ##### matrix X def checked
+  X<-solve(IJ-pi_Igamma)   ##### matrix X def checked
 
   # step 2 Matrix A calc
 
-  Rrecip=c(sapply(R, function(x) 1/x))  #getting the reciprocal of R vector (1/Ri)
+  Rrecip<-c(sapply(R, function(x) 1/x))  #getting the reciprocal of R vector (1/Ri)
 
 
-  RR=crossprod(t(Rrecip),R)
+  RR<-crossprod(t(Rrecip),R)
 
-  A=(crossprod(t(Rrecip),R)*(pi_I%*%Igammadiag))   #### matrix A def
+  A<-(crossprod(t(Rrecip),R)*(pi_I%*%Igammadiag))   #### matrix A def
 
   # step 3 Matrix diagZ calc
-  diagz=diag(c(epsilon*Rrecip*(R%*%(diag(c(col))%*%t(pi_I%*%Igammadiag))))) ###matrix(diag(z))
+  diagz<-diag(c(epsilon*Rrecip*(R%*%(diag(c(col))%*%t(pi_I%*%Igammadiag))))) ###matrix(diag(z))
 
   # step 4 Matrix A' calc
-  Ap=(crossprod(t(Rrecip),R)*(pi_F%*%diaggamma))  ##### matrix A'
+  Ap<-(crossprod(t(Rrecip),R)*(pi_F%*%diaggamma))  ##### matrix A'
 
   # step 5 Matrix Y2 calc
 
   ###### matrix Y2 checked. correct
-  Y2=crossprod(pi_F,(diaggamma+crossprod(Igammadiag,crossprod(t(X),crossprod(pi_I,diaggamma)))))
+  Y2<-crossprod(pi_F,(diaggamma+crossprod(Igammadiag,crossprod(t(X),crossprod(pi_I,diaggamma)))))
 
   # step 6 Matrix Z' calc
   #####matrix diag(z')
-  diagzp=diag(c(epsilon*Rrecip*(R%*%(diag(c(colF))%*%t(pi_F%*%diaggamma)))))
+  diagzp<-diag(c(epsilon*Rrecip*(R%*%(diag(c(colF))%*%t(pi_F%*%diaggamma)))))
 
   # step 7 Matrix Z2 calc
-  ddzx=(diagz*Igammadiag)*(X%*%t(pi_I))
-  ddzxp=(diagzp*Igammadiag)*(X%*%t(pi_I))
+  ddzx<-(diagz*Igammadiag)*(X%*%t(pi_I))
+  ddzxp<-(diagzp*Igammadiag)*(X%*%t(pi_I))
 
-  zg=diagz*diaggamma
-  zIg=diagz*Igammadiag
-  zpg=diagzp%*%diaggamma
-  zpIg=diagzp%*%Igammadiag
+  zg<-diagz*diaggamma
+  zIg<-diagz*Igammadiag
+  zpg<-diagzp%*%diaggamma
+  zpIg<-diagzp%*%Igammadiag
 
   #######matrix Z2 correct
-  Z2=(A-zg)+((epsilon*A-zIg)%*%X%*%t(pi_I)%*%diaggamma) ##checked Matrix Z2
+  Z2<-(A-zg)+((epsilon*A-zIg)%*%X%*%t(pi_I)%*%diaggamma) ##checked Matrix Z2
 
   # step 8 Matrix Z2' calc
   ########matrix Z2' checked correct
-  Z2P=(Ap+(epsilon*(Ap%*%Y2))-zpg-(zpIg%*%X%*%t(pi_I)%*%diaggamma))
+  Z2P<-(Ap+(epsilon*(Ap%*%Y2))-zpg-(zpIg%*%X%*%t(pi_I)%*%diaggamma))
 
   # step 9 Matrix Z1 calc
   ########matrix Z1 checked
-  Z1=(1/epsilon)*(diagz-((epsilon*A-zIg)%*%X%*%t(pi_I)))
+  Z1<-(1/epsilon)*(diagz-((epsilon*A-zIg)%*%X%*%t(pi_I)))
 
   # step 10 Matrix Y1 calc
 
   ######## matrix Y1 checked correct
-  Y1=((-1)/epsilon)*(t(pi_F)+crossprod(pi_F,crossprod(Igammadiag,crossprod(t(X),t(pi_I)))))
+  Y1<-((-1)/epsilon)*(t(pi_F)+crossprod(pi_F,crossprod(Igammadiag,crossprod(t(X),t(pi_I)))))
 
   # step 11 Matrix Z1' calc
   ######## matrix Z1' Checked
-  Z1p=((1/epsilon)*(diagzp+(zpIg%*%X%*%t(pi_I))))+(epsilon*Ap%*%Y1)
+  Z1p<-((1/epsilon)*(diagzp+(zpIg%*%X%*%t(pi_I))))+(epsilon*Ap%*%Y1)
 
   # step 12 Matrix B calc
   ######### matrix B
 
   #Check
 
-  B=epsilon*(crossprod(t(Rrecip),R))*((pi_I)%*%(Igammadiag)%*%diag(c(colSums(pi_I))))
+  B<-epsilon*(crossprod(t(Rrecip),R))*((pi_I)%*%(Igammadiag)%*%diag(c(colSums(pi_I))))
 
   # step 13 Matrix B' calc
   ###check Bp
 
-  Bp=epsilon*(crossprod(t(Rrecip),R))*(pi_F%*%diaggamma%*%diag(c(colSums(pi_F))))
+  Bp<-epsilon*(crossprod(t(Rrecip),R))*(pi_F%*%diaggamma%*%diag(c(colSums(pi_F))))
 
   # step 14 Matrix Z3 calc
   ######### matrix Z3 checked correct
-  Z3=(epsilon*A-zIg)%*%X
+  Z3<-(epsilon*A-zIg)%*%X
 
   # step 15 Matrix Y3 calc
   ######### matrix Y3 checked correct
-  Y3=crossprod(t(pi_Fgamma),X)
+  Y3<-crossprod(t(pi_Fgamma),X)
 
   # step 16 Matrix Z3' calc
   ######### matrix Z3'?
-  Z3p=(epsilon*(Ap%*%Y3)-(zpIg)%*%X)
+  Z3p<-(epsilon*(Ap%*%Y3)-(zpIg)%*%X)
 
   # step 17 Matrix Z4' calc
   ######### matrix Z4'?
-  Z4p=epsilon*Ap
+  Z4p<-epsilon*Ap
 
   ######################### comparison of X' using psuedo inverse
   ######################### with normalized format
   # step 18 Matrix X' calc
 
   ######### matrix X'? using normalized def with Q
-  gR=R*gamma
-  Q= matrix(rep(gR,each=J), ncol=J, byrow=FALSE)
-  Xp=solve(IJ-(Z2+Z2P)-Q)
+  gR<-R*gamma
+  Q<- matrix(rep(gR,each=J), ncol=J, byrow=FALSE)
+  Xp<-solve(IJ-(Z2+Z2P)-Q)
 
 
   ######### matrix X'? using psuedo inverse
 
-  Xpp= ginv(IJ-Z2-Z2P)
+  Xpp<- ginv(IJ-Z2-Z2P)
 # IS THIS NECESSARY:  pinv(IJ-Z2-Z2P) #same result as ginv
 
-  XZ1=Xp%*%(Z1+Z1p)
-  XZ3=Xp%*%(Z3+Z3p)
+  XZ1<-Xp%*%(Z1+Z1p)
+  XZ3<-Xp%*%(Z3+Z3p)
 
   ######### result C_hat_1 using X' psuedo inverse checked correct
-  C_hat_1=((XZ1-(Y1+(Y2%*%XZ1)))%*%(T_hat))+((Y2%*%Xp-Xp)%*%diag(B%*%t(tau_hat_I)))+((Y2%*%Xp-Xp)%*%diag(Bp%*%t(tau_hat_F)))+
+  C_hat_1<-((XZ1-(Y1+(Y2%*%XZ1)))%*%(T_hat))+((Y2%*%Xp-Xp)%*%diag(B%*%t(tau_hat_I)))+((Y2%*%Xp-Xp)%*%diag(Bp%*%t(tau_hat_F)))+
     ((XZ3-(Y3+(Y2%*%XZ3)))%*%(diag(crossprod(pi_I,tau_hat_I))))+(((Xp%*%Z4p)-(IJ+(Y2%*%Xp%*%Z4p)))%*%diag(crossprod(pi_F,tau_hat_F)))
 
-  XZ1pp=Xpp%*%(Z1+Z1p)
-  XZ3pp=Xpp%*%(Z3+Z3p)
-  C_hat_2=((XZ1pp-(Y1+(Y2%*%XZ1pp)))%*%(T_hat))+((Y2%*%Xpp-Xpp)%*%diag(B%*%t(tau_hat_I)))+((Y2%*%Xpp-Xpp)%*%diag(Bp%*%t(tau_hat_F)))+
+  XZ1pp<-Xpp%*%(Z1+Z1p)
+  XZ3pp<-Xpp%*%(Z3+Z3p)
+  C_hat_2<-((XZ1pp-(Y1+(Y2%*%XZ1pp)))%*%(T_hat))+((Y2%*%Xpp-Xpp)%*%diag(B%*%t(tau_hat_I)))+((Y2%*%Xpp-Xpp)%*%diag(Bp%*%t(tau_hat_F)))+
     ((XZ3pp-(Y3+(Y2%*%XZ3pp)))%*%(diag(crossprod(pi_I,tau_hat_I))))+(((Xpp%*%Z4p)-(IJ+(Y2%*%Xpp%*%Z4p)))%*%diag(crossprod(pi_F,tau_hat_F)))
 
   data.frame(C_hat_1,C_hat_2)
