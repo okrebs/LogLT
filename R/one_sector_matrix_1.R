@@ -79,65 +79,53 @@ calc_cf_log_m_1 <- function(J, R, pi_I, pi_F, gamma, T_hat, tau_hat_I,
   # not precision. Without extra packages you are limited to ~15-16 digits of
   # precision
 
-  diaggamma <- diag(c(gamma))
+  diaggamma <- diag(gamma)
   IJ <- diag(J)
   Igammadiag <- IJ - diaggamma
   pi_Igamma <- crossprod(pi_I, Igammadiag)
   pi_Fgamma <- crossprod(pi_F, Igammadiag)
-
-  ###### vector w elements from pi_I pi11+pi21, pi12+pi22
-  col <- matrix(colSums(pi_I), ncol = 2)
-  ###### vector w elements from pi_F pi11+pi21, pi12+pi22
-  colF <- matrix(colSums(pi_F), ncol = 2)
 
   # step 1 Matrix X calc
   X <- solve(IJ - pi_Igamma)   ##### matrix X def checked
 
   # step 2 Matrix A calc
   # getting the reciprocal of R vector (1/Ri)
-  Rrecip <- c(sapply(R, function(x) 1 / x))
-  RR <- crossprod(t(Rrecip), R)
-  A <- (crossprod(t(Rrecip), R) * (pi_I %*% Igammadiag))
+  Rrecip <- 1/R
+  A <- crossprod(Rrecip, R) * (pi_I %*% Igammadiag)
 
   # step 3 Matrix diagZ calc
   # matrix(diag(z))
-  diagz <-
-    diag(c(epsilon * Rrecip * (R %*% (
-      diag(c(col)) %*% t(pi_I %*% Igammadiag)
-    ))))
+  diagz <- diag(as.vector(epsilon * Rrecip * (R %*% t(pi_I %*% Igammadiag))))
 
   # step 4 Matrix A' calc
-  Ap <- (crossprod(t(Rrecip), R) * (pi_F %*% diaggamma))
+  Ap <- crossprod(Rrecip, R) * (pi_F %*% diaggamma)
 
   # step 5 Matrix Y2 calc
-  Y2 <- crossprod(pi_F, (diaggamma + crossprod(Igammadiag, crossprod(
-      t(X), crossprod(pi_I, diaggamma)
-    ))))
+  Y2 <- crossprod(pi_F, diaggamma +
+                    crossprod(Igammadiag, crossprod(t(X),
+                                                    crossprod(pi_I, diaggamma)
+        )))
 
   # step 6 Matrix Z' calc
   #####matrix diag(z')
-  diagzp <-
-    diag(c(epsilon * Rrecip * (R %*% (
-      diag(c(colF)) %*% t(pi_F %*% diaggamma)
-    ))))
+  diagzp <- diag(as.vector(epsilon * Rrecip * (R %*% t(pi_F %*% diaggamma))))
 
   # step 7 Matrix Z2 calc
-  ddzx <- (diagz * Igammadiag) * (X %*% t(pi_I))
-  ddzxp <- (diagzp * Igammadiag) * (X %*% t(pi_I))
+  ddzx <- diagz * Igammadiag * (X %*% t(pi_I))
+  ddzxp <- diagzp * Igammadiag * (X %*% t(pi_I))
   zg <- diagz * diaggamma
   zIg <- diagz * Igammadiag
   zpg <- diagzp %*% diaggamma
   zpIg <- diagzp %*% Igammadiag
 
   #######matrix Z2 correct
-  Z2 <- (A - zg) + ((epsilon * A - zIg) %*% X %*% t(pi_I) %*% diaggamma)
+  Z2 <- A - zg + (epsilon * A - zIg) %*% X %*% t(pi_I) %*% diaggamma
 
   # step 8 Matrix Z2' calc
-  Z2P <- (Ap + (epsilon * (Ap %*% Y2)) - zpg -
-            (zpIg %*% X %*% t(pi_I) %*% diaggamma))
+  Z2P <- Ap + epsilon * (Ap %*% Y2) - zpg - zpIg %*% X %*% t(pi_I) %*% diaggamma
 
   # step 9 Matrix Z1 calc
-  Z1 <- (1 / epsilon) * (diagz - ((epsilon * A - zIg) %*% X %*% t(pi_I)))
+  Z1 <- 1 / epsilon * (diagz - (epsilon * A - zIg) %*% X %*% t(pi_I))
 
   # step 10 Matrix Y1 calc
   Y1 <- -1 / epsilon *
@@ -145,16 +133,15 @@ calc_cf_log_m_1 <- function(J, R, pi_I, pi_F, gamma, T_hat, tau_hat_I,
        crossprod(pi_F, crossprod(Igammadiag, crossprod(t(X), t(pi_I)))))
 
   # step 11 Matrix Z1' calc
-  Z1p <- ((1 / epsilon) *
-            (diagzp + (zpIg %*% X %*% t(pi_I)))) + (epsilon * Ap %*% Y1)
+  Z1p <- 1 / epsilon * (diagzp + (zpIg %*% X %*% t(pi_I))) + epsilon * Ap %*% Y1
 
   # step 12 Matrix B calc
-  B <- epsilon * crossprod(t(Rrecip), R) *
-    ((pi_I) %*% (Igammadiag) %*% diag(c(colSums(pi_I))))
+  B <- epsilon * crossprod(Rrecip, R) *
+    (pi_I %*% Igammadiag %*% diag(colSums(pi_I)))
 
   # step 13 Matrix B' calc
-  Bp <- epsilon * crossprod(t(Rrecip), R) *
-    (pi_F %*% diaggamma %*% diag(c(colSums(pi_F))))
+  Bp <- epsilon * crossprod(Rrecip, R) *
+    (pi_F %*% diaggamma %*% diag(colSums(pi_F)))
 
   # step 14 Matrix Z3 calc
   Z3 <- (epsilon * A - zIg) %*% X
@@ -163,7 +150,7 @@ calc_cf_log_m_1 <- function(J, R, pi_I, pi_F, gamma, T_hat, tau_hat_I,
   Y3 <- crossprod(t(pi_Fgamma), X)
 
   # step 16 Matrix Z3' calc
-  Z3p <- (epsilon * (Ap %*% Y3) - (zpIg) %*% X)
+  Z3p <- epsilon * (Ap %*% Y3) - (zpIg) %*% X
 
   # step 17 Matrix Z4' calc
   Z4p <- epsilon * Ap
@@ -188,11 +175,11 @@ calc_cf_log_m_1 <- function(J, R, pi_I, pi_F, gamma, T_hat, tau_hat_I,
   ######### result C_hat_1 using X' psuedo inverse checked correct
   calc_C_hat <- function(XZ1_, XZ3_, Xp_, Y1, Y2, Y3, T_hat, B, Bp, tau_hat_I,
                          tau_hat_F, pi_I, pi_F, Z4p, IJ) {
-    (XZ1_ - (Y1 + (Y2 %*% XZ1_))) %*% (T_hat) +
+    (XZ1_ - (Y1 + Y2 %*% XZ1_)) %*% T_hat +
       (Y2 %*% Xp_ - Xp_) %*% diag(B %*% t(tau_hat_I)) +
       (Y2 %*% Xp_ - Xp_) %*% diag(Bp %*% t(tau_hat_F)) +
       (XZ3_ - (Y3 + (Y2 %*% XZ3_))) %*% diag(crossprod(pi_I, tau_hat_I)) +
-      ((Xp_ %*% Z4p) - (IJ + (Y2 %*% Xp_ %*% Z4p))) %*%
+      ((Xp_ %*% Z4p) - (IJ + Y2 %*% Xp_ %*% Z4p)) %*%
       diag(crossprod(pi_F, tau_hat_F))
   }
 
