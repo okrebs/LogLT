@@ -90,10 +90,6 @@ calc_cf_log_m_1=function(J,R,pi_I,pi_F,gamma,T_hat,tau_hat_I,tau_hat_F,epsilon){
 
 # step 1 Matrix X calc
   X=solve(IJ-pi_Igamma)   ##### matrix X def checked
-  ##############[,1]                [,2]
-  #[1,] 1.50000000000000022 0.50000000000000011
-  #[2,] 0.25000000000000006 1.75000000000000000
-
 
   # step 2 Matrix A calc
 
@@ -104,39 +100,20 @@ calc_cf_log_m_1=function(J,R,pi_I,pi_F,gamma,T_hat,tau_hat_I,tau_hat_F,epsilon){
 
   A=(crossprod(t(Rrecip),R)*(pi_I%*%Igammadiag))   #### matrix A def
 
-  ################[,1]                [,2]
-  #[1,] 0.29999999999999999 0.15000000000000002
-  #[2,] 0.13333333333333333 0.40000000000000002
-
   # step 3 Matrix diagZ calc
   diagz=diag(c(epsilon*Rrecip*(R%*%(diag(c(col))%*%t(pi_I%*%Igammadiag))))) ###matrix(diag(z))
-  ####             [,1]               [,2]
-  ##[1,] 1.3500000000000001 0.0000000000000000
-  ##[2,] 0.0000000000000000 1.6000000000000001
 
   # step 4 Matrix A' calc
   Ap=(crossprod(t(Rrecip),R)*(pi_F%*%diaggamma))  ##### matrix A'
-  #             [,1]                [,2]
-  #[1,] 0.25000000000000000 0.30000000000000004
-  #[2,] 0.16666666666666666 0.29999999999999999
 
   # step 5 Matrix Y2 calc
 
   ###### matrix Y2 checked. correct
   Y2=crossprod(pi_F,(diaggamma+crossprod(Igammadiag,crossprod(t(X),crossprod(pi_I,diaggamma)))))
-  #                   [,1]   [,2]
-  #[1,] 0.43750000000000000 0.5625
-  #[2,] 0.37500000000000006 0.6250
-
 
   # step 6 Matrix Z' calc
   #####matrix diag(z')
   diagzp=diag(c(epsilon*Rrecip*(R%*%(diag(c(colF))%*%t(pi_F%*%diaggamma)))))
-  ###############[,1]               [,2]
-  #[1,] 1.6500000000000001 0.0000000000000000
-  #[2,] 0.0000000000000000 1.3999999999999999
-
-
 
   # step 7 Matrix Z2 calc
   ddzx=(diagz*Igammadiag)*(X%*%t(pi_I))
@@ -150,41 +127,22 @@ calc_cf_log_m_1=function(J,R,pi_I,pi_F,gamma,T_hat,tau_hat_I,tau_hat_F,epsilon){
   #######matrix Z2 correct
   Z2=(A-zg)+((epsilon*A-zIg)%*%X%*%t(pi_I)%*%diaggamma) ##checked Matrix Z2
 
-  ####            [,1]                [,2]
-  ##[1,] -0.15000000000000008 0.60000000000000009
-  ##[2,]  0.43333333333333335 0.10000000000000009
-
-
   # step 8 Matrix Z2' calc
   ########matrix Z2' checked correct
   Z2P=(Ap+(epsilon*(Ap%*%Y2))-zpg-(zpIg%*%X%*%t(pi_I)%*%diaggamma))
-  ##############[,1]                  [,2]
-  #[1,] -0.32187500000000002  0.871874999999999956
-  #[2,]  0.54791666666666661 -0.081249999999999933
 
   # step 9 Matrix Z1 calc
   ########matrix Z1 checked
   Z1=(1/epsilon)*(diagz-((epsilon*A-zIg)%*%X%*%t(pi_I)))
-  ############### [,1]                 [,2]
-  ##[1,]  0.30000000000000004 -0.29999999999999999
-  ##[2,] -0.20000000000000001  0.19999999999999996
-
 
   # step 10 Matrix Y1 calc
 
   ######## matrix Y1 checked correct
   Y1=((-1)/epsilon)*(t(pi_F)+crossprod(pi_F,crossprod(Igammadiag,crossprod(t(X),t(pi_I)))))
-  ###############[,1]                 [,2]
-  ## [1,] -0.29166666666666663 -0.37500000000000000
-  ## [2,] -0.25000000000000000 -0.41666666666666663
-
 
   # step 11 Matrix Z1' calc
   ######## matrix Z1' Checked
   Z1p=((1/epsilon)*(diagzp+(zpIg%*%X%*%t(pi_I))))+(epsilon*Ap%*%Y1)
-  ################[,1]                 [,2]
-  ##[1,]  0.38125000000000020 -0.38124999999999998
-  ##[2,] -0.25416666666666665  0.25416666666666665
 
   # step 12 Matrix B calc
   ######### matrix B
@@ -192,55 +150,27 @@ calc_cf_log_m_1=function(J,R,pi_I,pi_F,gamma,T_hat,tau_hat_I,tau_hat_F,epsilon){
   #Check
 
   B=epsilon*(crossprod(t(Rrecip),R))*((pi_I)%*%(Igammadiag)%*%diag(c(colSums(pi_I))))
-  ###
-  ##             [,1]                [,2]
-  #[1,] 0.89999999999999991 0.45000000000000001
-  #[2,] 0.40000000000000002 1.20000000000000018
-
 
   # step 13 Matrix B' calc
   ###check Bp
 
   Bp=epsilon*(crossprod(t(Rrecip),R))*(pi_F%*%diaggamma%*%diag(c(colSums(pi_F))))
-  ######[,1]                [,2]
-  #[1,] 0.75 0.90000000000000002
-  #[2,] 0.50 0.89999999999999991
-
-
 
   # step 14 Matrix Z3 calc
   ######### matrix Z3 checked correct
   Z3=(epsilon*A-zIg)%*%X
 
-  #################[,1]                [,2]
-  #[1,] 0.44999999999999990 0.90000000000000002
-  #[2,] 0.70000000000000018 0.90000000000000024
-
-
   # step 15 Matrix Y3 calc
   ######### matrix Y3 checked correct
   Y3=crossprod(t(pi_Fgamma),X)
-  ##################[,1]   [,2]
-  #[1,] 0.43750000000000006 0.5625
-  #[2,] 0.37500000000000006 0.6250
-
 
   # step 16 Matrix Z3' calc
   ######### matrix Z3'?
   Z3p=(epsilon*(Ap%*%Y3)-(zpIg)%*%X)
 
-  ###[,1]                 [,2]
-  ##[1,] -0.57187500000000013  0.57187499999999991
-  ##[2,]  0.38124999999999998 -0.38124999999999987
-
-
-
   # step 17 Matrix Z4' calc
   ######### matrix Z4'?
   Z4p=epsilon*Ap
-  ##[,1]                [,2]
-  ##[1,] 0.75 0.90000000000000013
-  ##[2,] 0.50 0.89999999999999991
 
   ######################### comparison of X' using psuedo inverse
   ######################### with normalized format
@@ -253,73 +183,21 @@ calc_cf_log_m_1=function(J,R,pi_I,pi_F,gamma,T_hat,tau_hat_I,tau_hat_F,epsilon){
 
 
   ######### matrix X'? using psuedo inverse
-  ###############[,1]                 [,2]
-  #####[1,] -0.075414012738853453 -0.72458598726114654
-  #####[2,] -0.483057324840764357 -0.31694267515923563
+
   Xpp= ginv(IJ-Z2-Z2P)
 # IS THIS NECESSARY:  pinv(IJ-Z2-Z2P) #same result as ginv
-
-  ##              [,1]                 [,2]
-  ##[1,]  0.23517883390494862 -0.15678588926996570
-  ##[2,] -0.23517883390494870  0.15678588926996576
 
   XZ1=Xp%*%(Z1+Z1p)
   XZ3=Xp%*%(Z3+Z3p)
 
-
-
   ######### result C_hat_1 using X' psuedo inverse checked correct
   C_hat_1=((XZ1-(Y1+(Y2%*%XZ1)))%*%(T_hat))+((Y2%*%Xp-Xp)%*%diag(B%*%t(tau_hat_I)))+((Y2%*%Xp-Xp)%*%diag(Bp%*%t(tau_hat_F)))+
     ((XZ3-(Y3+(Y2%*%XZ3)))%*%(diag(crossprod(pi_I,tau_hat_I))))+(((Xp%*%Z4p)-(IJ+(Y2%*%Xp%*%Z4p)))%*%diag(crossprod(pi_F,tau_hat_F)))
-
-  ######Results of C_hat_2 with normal matrix Xp=solve(IJ-(Z2+Z2P)-Q)
-
-  #################[,1]
-  ##[1,] -10.078556263269640
-  ##[2,] -14.169851380042463
-
-
-
-
-
-
 
   XZ1pp=Xpp%*%(Z1+Z1p)
   XZ3pp=Xpp%*%(Z3+Z3p)
   C_hat_2=((XZ1pp-(Y1+(Y2%*%XZ1pp)))%*%(T_hat))+((Y2%*%Xpp-Xpp)%*%diag(B%*%t(tau_hat_I)))+((Y2%*%Xpp-Xpp)%*%diag(Bp%*%t(tau_hat_F)))+
     ((XZ3pp-(Y3+(Y2%*%XZ3pp)))%*%(diag(crossprod(pi_I,tau_hat_I))))+(((Xpp%*%Z4p)-(IJ+(Y2%*%Xpp%*%Z4p)))%*%diag(crossprod(pi_F,tau_hat_F)))
 
-
-
   return(data.frame(C_hat_1,C_hat_2))
-  ####################results with pseudo inverse Xpp= ginv(IJ-Z2-Z2P)
-
-  #                 [,1]
-  #[1,] -10.078556263269636
-  #[2,] -14.169851380042463
-
 }
-
-
-
-
-pi_I=matrix(c(0.6,0.4,0.2,0.8),ncol=2, nrow=2)
-pi_F=matrix(c(0.5,0.5,0.4,0.6),nrow=2,ncol=2)
-
-
-
-
-
-
-J=2;
-gamma=c(0.5,0.5)
-epsilon=3;
-R=matrix(c(1,1.5),nrow=1)
-T_hat=matrix(c(1,2),nrow=2)
-
-tau_hat_I=matrix(c(3,4,5,6),byrow = TRUE, nrow=2)
-tau_hat_F=matrix(c(7,8,9,10),byrow = TRUE, nrow=2)
-
-
-calc_cf_log_m_1(J,R,pi_I,pi_F,gamma,T_hat,tau_hat_I,tau_hat_F,epsilon)
-
