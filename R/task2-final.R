@@ -117,46 +117,6 @@
 
 calc_cf_log_t2=function(simple_data,shocks,parameters){
 
-  #####################################################
-  ########### step 1: decomposition of the inputs to ##
-  ########### make them ready for the computations ####
-  #####################################################
-
-  parameters=epsilon;
-
-  if(!is.list(simple_data)&!is.list(shocks)){
-    stop("not a list")}
-
-  if(is.vector(simple_data[[1]])&is.vector(simple_data[[2]])&is.vector(simple_data[[3]])){
-
-
-    R1=simple_data[[1]]
-    pi1=simple_data[[2]]
-    gamma=as.vector(simple_data[[3]])
-
-
-
-    R = matrix(R1,nrow=1,ncol=length(R1))
-    pi = matrix(pi1,ncol=1)
-    J=dim(R)[2]
-
-    pi_I=matrix(as.vector(pi[1:J^2]),nrow=J,ncol=J)
-    pi_F=matrix(as.vector(pi[(J^2)+1:(J^2+J^2)]),nrow=J,ncol=J)
-
-
-  }
-
-
-
-  if(is.vector(shocks[[1]])&is.vector(shocks[[2]])){
-    T_hat1 = shocks[[1]]
-    tau_hat1 = shocks[[2]]
-    T_hat=matrix(T_hat1, ncol = 1)
-    tau_hat = matrix(tau_hat1,nrow=1,ncol=J^2+J^2)
-    tau_hat_I=matrix(as.vector(tau_hat[1:(J^2)]),byrow=TRUE,nrow=J,ncol=J)
-    tau_hat_F=matrix(as.vector(tau_hat[(J^2)+1:(J^2+J^2)]),byrow=TRUE,,nrow=J,ncol=J)
-  }
-
 
 
   #######################################################
