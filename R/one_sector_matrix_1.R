@@ -3,26 +3,26 @@
 
 #' \code{calc_cf_log_m_1} is a function that calculates the
 #' model for one sector assumption for a given set of data and a
-#' shock. This function gets sample data in matrix form 
+#' shock. This function gets sample data in matrix form
 #' ( either arbitrary matrix or real world data)
 #' , shocks, and parameters and returns changes of welfare C in two forms:
 
 #' 1. C_hat_1 returns results based on X' computed based on psuedo inverse
 #' 2. C_hat_2 returns result based on X' computed based on normalized Q.
-#' At the end, C_hat_1 and C_hat_2 should convert to a same number with 
+#' At the end, C_hat_1 and C_hat_2 should convert to a same number with
 #' with an infinitesimal difference
 
 
 #' @details This script calculates welfare changes as a result of shock to one sector model:                                   #
-#' Here we are using matrix representation of the mode. 
+#' Here we are using matrix representation of the mode.
 
 #' using options() function we set digits=22 to make sure about the accuracy of the model
 #' of  convergence.
 
 #' The objective of using option function is to make sure
-#' about the convergence of X' using psuedo inverse in comparison 
-#' with inverse of normalized one using Q matrix which is 
-#' Q=gamma*R as it is mentioned in footnote-page 10-task 1. 
+#' about the convergence of X' using psuedo inverse in comparison
+#' with inverse of normalized one using Q matrix which is
+#' Q=gamma*R as it is mentioned in footnote-page 10-task 1.
 #'
 #' @param data a list of model variables given as examples
 #'   \describe{
@@ -40,24 +40,23 @@
 #'   \describe{
 #'     \item{T_hat}{technological shock}}
 #'     \item{tau_hat}{tariff shocks that may affect both importer and exporter}
+#' @importFrom MASS ginv
 #' @return after computing all X,X',A,Ap,Y1,Y1p,Y2,Y2p,B,Bp,Z1,Z1p,Z2,Z2p
 #' Z3,Z3p,Z4p,Y3, the function returns C_hat_1 and C_hat_2 based on psuedo and normalized X'
 
-
-
 #' calc_cf_log_m -> function(simple_data,shocks,parameters)
 
-#' three blocks of input: 
+#' three blocks of input:
 
 #' 1. simple_data <-
 #' R revenue or GDP vector of size J
-#' J number of countries 
+#' J number of countries
 #' pi=matrix(c(),nrow=J) , is a vector of size J
 #' needed to be divided into intermediate and final pi, pi_I:J*J for intermediate
 #' pi_F:J*J for final
 #' pi_I=matrix(pi[1:J*J],nrow=J,ncol=J)
 #' pi_F=matrix(pi[(J*J)+1:J*J+J*J],nrow=J,ncol=J)
-#' gamma=as.vector of size J 
+#' gamma=as.vector of size J
 
 
 
@@ -69,36 +68,14 @@
 
 #' 3. shock <-
 #'    list(
-#'      T_hat = matrix(vector(c(), nrow = J,ncol=1) 
+#'      T_hat = matrix(vector(c(), nrow = J,ncol=1)
 #'      tau_hat=matrix(c(),nrow=4J=N,ncol=1) should be divided into two types of shocks: intermediates and final
 #'      tau_hat_I=matrix(tau_hat[1:(J*J)],nrow=J,ncol=J)
 #'      tau_hat_F=matrix(tau_hat[(J*J)+1:(J*J)+(J*J)],nrow=J,ncol=J)
 
-
-
-
-
-
-
-
 calc_cf_log_m_1=function(J,R,pi_I,pi_F,gamma,T_hat,tau_hat_I,tau_hat_F,epsilon){
 
-
-
-  
-  
-  ############################################################
-  ############### Libraries ##################################
-  ############################################################
-  
-  library(MASS)
-  #library(matlib)
-  library(pracma)
-  library(dplyr)
-  library(devtools)
-  
-  
-  options(digits=22) 
+  options(digits=22)
 
   diaggamma=diag(c(gamma));  ###### diagonal matrix of gamma
 
@@ -116,8 +93,8 @@ calc_cf_log_m_1=function(J,R,pi_I,pi_F,gamma,T_hat,tau_hat_I,tau_hat_F,epsilon){
   ##############[,1]                [,2]
   #[1,] 1.50000000000000022 0.50000000000000011
   #[2,] 0.25000000000000006 1.75000000000000000
-  
-  
+
+
   # step 2 Matrix A calc
 
   Rrecip=c(sapply(R, function(x) 1/x))  #getting the reciprocal of R vector (1/Ri)
@@ -136,13 +113,13 @@ calc_cf_log_m_1=function(J,R,pi_I,pi_F,gamma,T_hat,tau_hat_I,tau_hat_F,epsilon){
   ####             [,1]               [,2]
   ##[1,] 1.3500000000000001 0.0000000000000000
   ##[2,] 0.0000000000000000 1.6000000000000001
-  
+
   # step 4 Matrix A' calc
   Ap=(crossprod(t(Rrecip),R)*(pi_F%*%diaggamma))  ##### matrix A'
   #             [,1]                [,2]
   #[1,] 0.25000000000000000 0.30000000000000004
   #[2,] 0.16666666666666666 0.29999999999999999
-  
+
   # step 5 Matrix Y2 calc
 
   ###### matrix Y2 checked. correct
@@ -150,8 +127,8 @@ calc_cf_log_m_1=function(J,R,pi_I,pi_F,gamma,T_hat,tau_hat_I,tau_hat_F,epsilon){
   #                   [,1]   [,2]
   #[1,] 0.43750000000000000 0.5625
   #[2,] 0.37500000000000006 0.6250
-  
-  
+
+
   # step 6 Matrix Z' calc
   #####matrix diag(z')
   diagzp=diag(c(epsilon*Rrecip*(R%*%(diag(c(colF))%*%t(pi_F%*%diaggamma)))))
@@ -191,8 +168,8 @@ calc_cf_log_m_1=function(J,R,pi_I,pi_F,gamma,T_hat,tau_hat_I,tau_hat_F,epsilon){
   ############### [,1]                 [,2]
   ##[1,]  0.30000000000000004 -0.29999999999999999
   ##[2,] -0.20000000000000001  0.19999999999999996
-  
-  
+
+
   # step 10 Matrix Y1 calc
 
   ######## matrix Y1 checked correct
@@ -200,8 +177,8 @@ calc_cf_log_m_1=function(J,R,pi_I,pi_F,gamma,T_hat,tau_hat_I,tau_hat_F,epsilon){
   ###############[,1]                 [,2]
   ## [1,] -0.29166666666666663 -0.37500000000000000
   ## [2,] -0.25000000000000000 -0.41666666666666663
-  
-  
+
+
   # step 11 Matrix Z1' calc
   ######## matrix Z1' Checked
   Z1p=((1/epsilon)*(diagzp+(zpIg%*%X%*%t(pi_I))))+(epsilon*Ap%*%Y1)
@@ -228,9 +205,9 @@ calc_cf_log_m_1=function(J,R,pi_I,pi_F,gamma,T_hat,tau_hat_I,tau_hat_F,epsilon){
   ######[,1]                [,2]
   #[1,] 0.75 0.90000000000000002
   #[2,] 0.50 0.89999999999999991
-  
-  
-  
+
+
+
   # step 14 Matrix Z3 calc
   ######### matrix Z3 checked correct
   Z3=(epsilon*A-zIg)%*%X
@@ -246,8 +223,8 @@ calc_cf_log_m_1=function(J,R,pi_I,pi_F,gamma,T_hat,tau_hat_I,tau_hat_F,epsilon){
   ##################[,1]   [,2]
   #[1,] 0.43750000000000006 0.5625
   #[2,] 0.37500000000000006 0.6250
-  
-  
+
+
   # step 16 Matrix Z3' calc
   ######### matrix Z3'?
   Z3p=(epsilon*(Ap%*%Y3)-(zpIg)%*%X)
@@ -255,32 +232,32 @@ calc_cf_log_m_1=function(J,R,pi_I,pi_F,gamma,T_hat,tau_hat_I,tau_hat_F,epsilon){
   ###[,1]                 [,2]
   ##[1,] -0.57187500000000013  0.57187499999999991
   ##[2,]  0.38124999999999998 -0.38124999999999987
-  
-  
-  
+
+
+
   # step 17 Matrix Z4' calc
   ######### matrix Z4'?
   Z4p=epsilon*Ap
   ##[,1]                [,2]
   ##[1,] 0.75 0.90000000000000013
   ##[2,] 0.50 0.89999999999999991
-  
+
   ######################### comparison of X' using psuedo inverse
   ######################### with normalized format
   # step 18 Matrix X' calc
 
-  ######### matrix X'? using normalized def with Q 
+  ######### matrix X'? using normalized def with Q
   gR=R*gamma
   Q= matrix(rep(gR,each=J), ncol=J, byrow=FALSE)
   Xp=solve(IJ-(Z2+Z2P)-Q)
-  
-  
-  ######### matrix X'? using psuedo inverse 
+
+
+  ######### matrix X'? using psuedo inverse
   ###############[,1]                 [,2]
   #####[1,] -0.075414012738853453 -0.72458598726114654
   #####[2,] -0.483057324840764357 -0.31694267515923563
   Xpp= ginv(IJ-Z2-Z2P)
-  pinv(IJ-Z2-Z2P) #same result as ginv
+# IS THIS NECESSARY:  pinv(IJ-Z2-Z2P) #same result as ginv
 
   ##              [,1]                 [,2]
   ##[1,]  0.23517883390494862 -0.15678588926996570
