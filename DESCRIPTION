@@ -20,6 +20,7 @@ BugReports: https://github.com/okrebs/LogLT/issues
 LinkingTo: 
     Rcpp
 Imports: 
+    dplyr,
     expm,
     MASS,
     Rcpp

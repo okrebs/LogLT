@@ -99,10 +99,10 @@ calc_cf <- function(data,
     print(paste0("Invalid mobility argument (allowed are only \"perfect\",)",
                  "\"imperfect\", \"immobile\"). Assuming perfect mobility."))
   }
-  parameters$mobility <- case_when(parameters$mobility == "immobile" ~ 0,
-                                   parameters$mobility == "imperfect" ~ 1,
-                                   parameters$mobility == "perfect" ~ 2,
-                                   TRUE ~ 2)
+  parameters$mobility <- dplyr::case_when(parameters$mobility == "immobile" ~ 0,
+                                          parameters$mobility == "imperfect" ~ 1,
+                                          parameters$mobility == "perfect" ~ 2,
+                                          TRUE ~ 2)
 
   if(length(parameters$mobility) == 1) {
     parameters$mobility <- rep(parameters$mobility, length(data$location_id))
