@@ -76,8 +76,8 @@ calc_cf <- function(data,
     J <- dim(R)[1]
     pi_I <- matrix(pi[1:J^2], nrow = J, ncol = J)
     pi_F <- matrix(pi[(J^2 + 1):(J^2 + J^2)], nrow = J, ncol = J)
-    T_hat <- shock[["T_hat"]]
-    tau_hat <- shock[["tau_hat"]]
+    T_hat <- shock[["T_hat"]] - 1
+    tau_hat <- shock[["tau_hat"]] - 1
     tau_hat_I <- matrix(tau_hat[1:(J^2)], nrow = J, ncol = J)
     tau_hat_F <- matrix(tau_hat[(J^2 + 1):(J^2 + J^2)], nrow = J, ncol = J)
 
@@ -87,11 +87,12 @@ calc_cf <- function(data,
       } else {
         pseudo = FALSE
       }
-      calc_cf_logl(J, R, pi_I, pi_F, gamma, T_hat, tau_hat_I, tau_hat_F,
-                   parameters$epsilon, use_pseudo = pseudo)
+      return(calc_cf_logl(J, R, pi_I, pi_F, gamma, T_hat, tau_hat_I, tau_hat_F,
+                          parameters$epsilon, use_pseudo = pseudo))
     } else {
-      calc_cf_logl_decomp(J, R, pi_I, pi_F, gamma, T_hat, tau_hat_I,
-                   tau_hat_F, epsilon, ktol = tol, kmax_iter = maxiter)
+      return(calc_cf_logl_decomp(J, R, pi_I, pi_F, gamma, T_hat, tau_hat_I,
+                                 tau_hat_F, parameters$epsilon, ktol = tol,
+                                 kmax_iter = maxiter))
     }
   }
   if (!all(parameters$mobility %in% c("perfect", "imperfect", "immobile"))) {

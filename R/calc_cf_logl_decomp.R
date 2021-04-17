@@ -1,8 +1,9 @@
 #' This file is a function,calc_cf_log_t2  that represents task 2.
-#' The basic idea behind this task is to rewrite our matrix as (Neumann) power series:
-#' (I???M)???1 = I +M+M^2 +M^3 + ..., (20)
+#' The basic idea behind this task is to rewrite our matrix as (Neumann) power
+#' series: (I???M)???1 = I +M+M^2 +M^3 + ..., (20)
 #' where, for brevity,it is referred to I as a 0-degree effect, M as a 1st degree effect, M2 as a 2nd degree effect, etc. Importantly, the above decomposition
-#' only works if the spectral radius of M, (M), is below one, i.e., (M) < 1, which we will have to verify below.
+#' only works if the spectral radius of M, (M), is below one, i.e., (M) < 1,
+#' which we will have to verify below.
 #' To conduct this decomposition exercise in our framework, we rewrite the above matrices in the following block matrix form:
 #'c(dlogPI,dlogR)=V(I-M)^-1 and if pho(M) which is the spectral radius is below one,
 #'we can rewrite it as summation I+M+M^2....... .
@@ -61,7 +62,6 @@
 #' and individual degree effects of M M2 ......
 #' It also shows the number of repetitions that convergence happens.
 
-
 #' calc_cf_log_t2 -> function(simple_data,shocks,parameters)
 
 #' three blocks of input:
@@ -112,8 +112,8 @@
 #' C_hat_1               C_hat_2
 #' 1 0.0552016985138004401 0.0552016985138004401
 #' 2 0.0076433121019108185 0.0076433121019108159
-
-
+#' @importFrom expm %^%
+#' @export calc_cf_logl_decomp
 
 calc_cf_logl_decomp <- function(J, R, pi_I, pi_F, gamma, T_hat, tau_hat_I,
                                 tau_hat_F, epsilon, ktol = 1e-10,
@@ -129,6 +129,8 @@ calc_cf_logl_decomp <- function(J, R, pi_I, pi_F, gamma, T_hat, tau_hat_I,
   tpi_I <- t(pi_I)
   tpi_F <- t(pi_F)
 
+  # R defined as JxS matrix, with S = 1 its a column not a row vector!
+  R <- t(R)
   Rrecip <- 1/R
   RR <- crossprod(Rrecip, R)
 

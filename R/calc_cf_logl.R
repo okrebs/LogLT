@@ -71,6 +71,7 @@
 #'      tau_hat=matrix(c(),nrow=4J=N,ncol=1) should be divided into two types of shocks: intermediates and final
 #'      tau_hat_I=matrix(tau_hat[1:(J*J)],nrow=J,ncol=J)
 #'      tau_hat_F=matrix(tau_hat[(J*J)+1:(J*J)+(J*J)],nrow=J,ncol=J)
+#' @export calc_cf_logl
 
 calc_cf_logl <- function(J, R, pi_I, pi_F, gamma, T_hat, tau_hat_I,
                             tau_hat_F, epsilon, use_pseudo = FALSE) {
@@ -89,6 +90,8 @@ calc_cf_logl <- function(J, R, pi_I, pi_F, gamma, T_hat, tau_hat_I,
 
   # step 2 Matrix A calc
   # getting the reciprocal of R vector (1/Ri)
+  # R defined as JxS matrix, with S = 1 its a column not a row vector!
+  R <- t(R)
   Rrecip <- 1/R
   A <- crossprod(Rrecip, R) * (pi_I %*% Igammadiag)
 
