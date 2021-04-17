@@ -115,8 +115,9 @@
 
 
 
-calc_cf_log_t2=function(J, R, pi_I, pi_F, gamma, T_hat, tau_hat_I, tau_hat_F,
-                        epsilon, ktol = 1e-10, kmax_iter = 500){
+calc_cf_logl_decomp <- function(J, R, pi_I, pi_F, gamma, T_hat, tau_hat_I,
+                                tau_hat_F, epsilon, ktol = 1e-10,
+                                kmax_iter = 500) {
 
   # step 1: Computation of necessary matrices ##################################
   diaggamma <- diag(gamma)
