@@ -18,8 +18,8 @@ RoxygenNote: 7.1.1
 URL: https://github.com/okrebs/LogLT
 BugReports: https://github.com/okrebs/LogLT/issues
 LinkingTo: 
-    Rcpp,
-    RcppArmadillo
+    Rcpp
 Imports: 
+    expm,
     MASS,
     Rcpp
