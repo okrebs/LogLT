@@ -68,7 +68,7 @@ calc_cf <- function(data,
       stop("Log linearized model works with 1 sector only")
     }
     # extract from list
-    R <- data["R"]
+    R <- data[["R"]]
     pi <- data[["pi"]]
     gamma <- as.vector(simple_data[["gamma_js"]])
 
@@ -76,8 +76,8 @@ calc_cf <- function(data,
     J <- dim(R)[1]
     pi_I <- matrix(pi[1:J^2], nrow = J, ncol = J)
     pi_F <- matrix(pi[(J^2 + 1):(J^2 + J^2)], nrow = J, ncol = J)
-    T_hat <- shocks[["T_hat"]]
-    tau_hat <- shocks[["tau_hat"]]
+    T_hat <- shock[["T_hat"]]
+    tau_hat <- shock[["tau_hat"]]
     tau_hat_I <- matrix(tau_hat[1:(J^2)], nrow = J, ncol = J)
     tau_hat_F <- matrix(tau_hat[(J^2 + 1):(J^2 + J^2)], nrow = J, ncol = J)
 
