@@ -148,7 +148,7 @@ calc_cf_logl_decomp <- function(J, R, pi_I, pi_F, gamma, T_hat, tau_hat_I,
   M4 <- A + Ap + B %*% tpi_I %*% diaggamma + Bp %*% tpi_F %*% diaggamma -
     epsilon * diaggamma - Q
 
-  M <- matrix(rbind(cbind(M1, M2), cbind(M3, M4)), ncol = 4)
+  M <- matrix(rbind(cbind(M1, M2), cbind(M3, M4)), ncol = ncol(M1) + ncol(M2))
 
   # step 4: test spectral radius ###############################################
   spectral_R_M  <- max(abs(eigen(M)$value))
