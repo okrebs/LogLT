@@ -70,7 +70,7 @@ calc_cf <- function(data,
     # extract from list
     R <- data[["R"]]
     pi <- data[["pi"]]
-    gamma <- as.vector(simple_data[["gamma_js"]])
+    gamma <- as.vector(data[["gamma_js"]])
 
     # and reformat
     J <- dim(R)[1]
