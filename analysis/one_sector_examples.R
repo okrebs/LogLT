@@ -1,3 +1,10 @@
+library(dplyr)
+library(tidyr)
+library(haven) # for stata output
+# if not yet done install the iotr package
+# library(devtools)
+# install_github(repo = "okrebs/iotr")
+library(iotr) # for WIOD data
 library(LogLT)
 
 #simple mock data example ######################################################
@@ -5,14 +12,16 @@ library(LogLT)
 n_location <- 2
 n_sector <- 1
 
+# manually create some data
 simple_data <-
   list(
     location_id = seq(n_location),
     sector_id = seq(n_sector),
     R = matrix(c(1, 1.5), nrow = n_location, ncol = n_sector),
     D = rep(0, n_location),
-    pi = as.vector(array(c(0.6, 0.4, 0.2, 0.8, 0.5, 0.5, 0.4, 0.6),
-                         dim = c(n_location, n_location, n_sector, n_sector + 1))),
+    pi =
+      as.vector(array(c(0.6, 0.4, 0.2, 0.8, 0.5, 0.5, 0.4, 0.6),
+                      dim = c(n_location, n_location, n_sector, n_sector + 1))),
     alpha = matrix(1, nrow = n_location, ncol = n_sector),
     gamma_jrs = as.vector(array(c(0.5, 0.5),
                                 dim = c(n_location, n_sector, n_sector))),
@@ -30,12 +39,17 @@ shock <-
   list(
     T_hat = matrix(c(1.1,1), nrow = n_location, ncol = n_sector),
     tau_hat = rep(1, n_location * n_location * n_sector * (n_sector + 1)),
-    delta_hat = matrix(1, nrow = n_location, ncol = n_sector), # labor productivity changes
-    varkappa_hat = rep(1, n_location) # deficit changes
+    # labor productivity changes:
+    delta_hat = matrix(1, nrow = n_location, ncol = n_sector),
+    # deficit changes
+    varkappa_hat = rep(1, n_location)
   )
 
+# non-linear model
 test_ge <- calc_cf(simple_data, shock, parameters)$C_hat - 1
+# log linear model, old code
 test_ll <- calc_cf(simple_data, shock, parameters, method = "linearized")
+# log linear model, decomposition, new code
 test_decomp <- calc_cf(simple_data, shock, parameters,
                        method = "linearized_decomp")
 # test_decomp[[6]]
@@ -43,17 +57,10 @@ test_decomp <- calc_cf(simple_data, shock, parameters,
 
 # involved example =============================================================
 
-library(dplyr)
-library(tidyr)
-# if not yet done install the iotr package
-# library(devtools)
-# install_github(repo = "okrebs/iotr")
-library(iotr)
-
 # get wiot ---------------------------------------------------------------------
-wiot <- get_wiot(years = c(2014)#,
+wiot <- get_wiot(years = c(2014),
                  # set a cache path so you do not have to download this again
-                 #cache = "/home/uxb/RawData/WIOD/"
+                 cache = "/home/uxb/RawData/WIOD/"
                  ) %>%
   wiot2long() %>%
   filter(Country != "TOT") %>%
@@ -62,7 +69,7 @@ wiot <- get_wiot(years = c(2014)#,
 wiot <- wiot %>%
   rm_dynamics(dynamic_categories = c(60, 61), category_to_scale = 57)
 
-# after adapting aggregate -----------------------------------------------------
+# after adapting, aggregate ----------------------------------------------------
 wiot <- wiot %>%
   mutate(sector = 1,
          use = ifelse(use >= 57, 2L, 1L)) %>%
@@ -97,15 +104,70 @@ baseline_data$D <- no_deficit$D_prime
 
 # Run simulations ==============================================================
 
-for(i in length(locations)) {
+test_ge <- list()
+test_ll <- list()
+
+for(i in 1:length(locations)) {
   shock <-
     list("T_hat" = matrix(1, nrow = J, ncol = S),
          "tau_hat" = rep(1, J * J * (S + 1)),
          "delta_hat" = matrix(1, nrow = J, ncol = S),
          "varkappa_hat" = rep(1, J)
     )
-  shock$T_hat[i] <- 1.01 # 10% shock in country i
+  shock$T_hat[i,] <- 1.1 # 10% shock in country i
 
-  test_ge <- calc_cf(baseline_data, shock, parameters, tol = 1e-7)$C_hat - 1
-  test_decomp <- calc_cf(baseline_data, shock, parameters, method = "linearized_decomp")
+  test_ge[[i]] <- calc_cf(baseline_data, shock, parameters, tol = 1e-7)$C_hat - 1
+  # for now the decomposition code does not work
+  #test_decomp <- calc_cf(baseline_data, shock, parameters,
+                          #method = "linearized_decomp")
+  # so I use the old code from task 1
+  test_ll[[i]] <- calc_cf(baseline_data, shock, parameters, method = "linearized")
 }
+
+test_technology_shock <- expand_grid(shocked_country = locations,
+                                     country = locations) %>%
+  mutate(ge_nonlinear_C_hat = unlist(test_ge),
+         ge_loglinear_dlogC = unlist(test_ll))
+
+#correlation is extremly high
+#cor(test_technology_shock$ge_nonlinear_C_hat,
+#    test_technology_shock$ge_loglinear_dlogC)
+
+# output to stata
+write_dta(test_technology_shock, "analysis/data/test_technology_shock.dta")
+
+# Do the same with trade barrier shocks instead --------------------------------
+test_ge <- list()
+test_ll <- list()
+
+for(i in 1:length(locations)) {
+  shock <-
+    list("T_hat" = matrix(1, nrow = J, ncol = S),
+         "tau_hat" = rep(1, J * J * (S + 1)),
+         "delta_hat" = matrix(1, nrow = J, ncol = S),
+         "varkappa_hat" = rep(1, J)
+    )
+  # 10% barrier shock for all imports of i, except for goods produced in i
+  tmp <- array(shock$tau_hat, dim = c(J, J, S + 1))
+  tmp[-i, i,] <- 1.1
+  shock$tau_hat <- as.vector(tmp)
+
+  test_ge[[i]] <- calc_cf(baseline_data, shock, parameters, tol = 1e-7)$C_hat - 1
+  # for now the decomposition code does not work
+  #test_decomp <- calc_cf(baseline_data, shock, parameters,
+  #method = "linearized_decomp")
+  # so I use the old code from task 1
+  test_ll[[i]] <- calc_cf(baseline_data, shock, parameters, method = "linearized")
+}
+
+test_tradebarrier_shock <- expand_grid(shocked_country = locations,
+                                       country = locations) %>%
+  mutate(ge_nonlinear_C_hat = unlist(test_ge),
+         ge_loglinear_dlogC = unlist(test_ll))
+
+#correlation is extremly high
+# cor(test_tradebarrier_shock$ge_nonlinear_C_hat,
+#    test_tradebarrier_shock$ge_loglinear_dlogC)
+
+# output to stata
+write_dta(test_tradebarrier_shock, "analysis/data/test_tradebarrier_shock.dta")
