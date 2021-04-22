@@ -58,9 +58,9 @@ test_decomp <- calc_cf(simple_data, shock, parameters,
 # involved example =============================================================
 
 # get wiot ---------------------------------------------------------------------
-wiot <- get_wiot(years = c(2014),
+wiot <- get_wiot(years = c(2014)#,
                  # set a cache path so you do not have to download this again
-                 cache = "/home/uxb/RawData/WIOD/"
+                 #cache = "/home/uxb/RawData/WIOD/"
                  ) %>%
   wiot2long() %>%
   filter(Country != "TOT") %>%
