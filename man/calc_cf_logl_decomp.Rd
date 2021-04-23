@@ -54,33 +54,6 @@ Otherwise it says:  "The spectral radius is above one
 the decomposition cannot be done."
 and individual degree effects of M M2 ......
 It also shows the number of repetitions that convergence happens.
-calc_cf_log_t2 -> function(simple_data,shocks,parameters)
-three blocks of input:
-\enumerate{
-\item simple_data <-
-R revenue or GDP vector of size J
-J number of countries
-pi=as.vector , is a vector of size 2\emph{J}J
-needed to be divided into intermediate and final pi, pi_I:J\emph{J for intermediate
-pi_F:J}J for final
-pi_I=matrix(pi\link{1:J*J},nrow=J,ncol=J)
-pi_F=matrix(pi\link[=(J*J)+1:J*J+J*J]{(J\emph{J)+1:J}J+J*J},nrow=J,ncol=J)
-gamma=as.vector of size J
-\item parameters <-
-epsilon
-\item shock <-
-list(
-T_hat = matrix(vector(c(), nrow = J,ncol=1)
-tau_hat=matrix(c(),nrow=1,ncol=2\emph{J}J)) should be divided into two types of shocks: intermediates and final
-tau_hat_I=matrix(tau_hat\link{1:(J*J)},nrow=J,ncol=J)
-tau_hat_F=matrix(tau_hat\link[=(J*J)+1:(J*J)+(J*J)]{(J\emph{J)+1:(J}J)+(J*J)},nrow=J,ncol=J)
-convergency level 10^-22,10^-20,..... can be also given as an input
-(for compatibility to other functions, I exclude this)
-so the user can choose at what number of digits he/she wants
-the convergence happens. Here, by default I chose 10^(-20).
-It is an arbitrary level and it might be ok for someone else to
-accept convergency at 10^-43,....etc.
-}
 }
 \description{
 The question is: Where to stop the summation I+M+M^2...?
