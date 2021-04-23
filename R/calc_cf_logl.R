@@ -42,35 +42,6 @@
 #'     \item{tau_hat}{tariff shocks that may affect both importer and exporter}
 #' @return after computing all X,X',A,Ap,Y1,Y1p,Y2,Y2p,B,Bp,Z1,Z1p,Z2,Z2p
 #' Z3,Z3p,Z4p,Y3, the function returns C_hat_1 and C_hat_2 based on psuedo and normalized X'
-
-#' calc_cf_log_m -> function(simple_data,shocks,parameters)
-
-#' three blocks of input:
-
-#' 1. simple_data <-
-#' R revenue or GDP vector of size J
-#' J number of countries
-#' pi=matrix(c(),nrow=J) , is a vector of size J
-#' needed to be divided into intermediate and final pi, pi_I:J*J for intermediate
-#' pi_F:J*J for final
-#' pi_I=matrix(pi[1:J*J],nrow=J,ncol=J)
-#' pi_F=matrix(pi[(J*J)+1:J*J+J*J],nrow=J,ncol=J)
-#' gamma=as.vector of size J
-
-
-
-#'2. parameters <-
-#'  list(
-#'   epsilon = 3,
-#'    mobility = "immobile"
-
-
-#' 3. shock <-
-#'    list(
-#'      T_hat = matrix(vector(c(), nrow = J,ncol=1)
-#'      tau_hat=matrix(c(),nrow=4J=N,ncol=1) should be divided into two types of shocks: intermediates and final
-#'      tau_hat_I=matrix(tau_hat[1:(J*J)],nrow=J,ncol=J)
-#'      tau_hat_F=matrix(tau_hat[(J*J)+1:(J*J)+(J*J)],nrow=J,ncol=J)
 #' @export calc_cf_logl
 
 calc_cf_logl <- function(J, R, pi_I, pi_F, gamma, T_hat, tau_hat_I,

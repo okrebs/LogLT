@@ -26,29 +26,6 @@ calc_cf_logl(
 \value{
 after computing all X,X',A,Ap,Y1,Y1p,Y2,Y2p,B,Bp,Z1,Z1p,Z2,Z2p
 Z3,Z3p,Z4p,Y3, the function returns C_hat_1 and C_hat_2 based on psuedo and normalized X'
-calc_cf_log_m -> function(simple_data,shocks,parameters)
-three blocks of input:
-\enumerate{
-\item simple_data <-
-R revenue or GDP vector of size J
-J number of countries
-pi=matrix(c(),nrow=J) , is a vector of size J
-needed to be divided into intermediate and final pi, pi_I:J\emph{J for intermediate
-pi_F:J}J for final
-pi_I=matrix(pi\link{1:J*J},nrow=J,ncol=J)
-pi_F=matrix(pi\link[=(J*J)+1:J*J+J*J]{(J\emph{J)+1:J}J+J*J},nrow=J,ncol=J)
-gamma=as.vector of size J
-\item parameters <-
-list(
-epsilon = 3,
-mobility = "immobile"
-\item shock <-
-list(
-T_hat = matrix(vector(c(), nrow = J,ncol=1)
-tau_hat=matrix(c(),nrow=4J=N,ncol=1) should be divided into two types of shocks: intermediates and final
-tau_hat_I=matrix(tau_hat\link{1:(J*J)},nrow=J,ncol=J)
-tau_hat_F=matrix(tau_hat\link[=(J*J)+1:(J*J)+(J*J)]{(J\emph{J)+1:(J}J)+(J*J)},nrow=J,ncol=J)
-}
 }
 \description{
 \code{calc_cf_log_m_1} is a function that calculates the
