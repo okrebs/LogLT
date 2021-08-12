@@ -76,8 +76,8 @@ calc_cf <- function(data,
     J <- dim(R)[1]
     pi_I <- matrix(pi[1:J^2], nrow = J, ncol = J)
     pi_F <- matrix(pi[(J^2 + 1):(J^2 + J^2)], nrow = J, ncol = J)
-    T_hat <- shock[["T_hat"]] - 1
-    tau_hat <- shock[["tau_hat"]] - 1
+    T_hat <- log(shock[["T_hat"]])
+    tau_hat <- log(shock[["tau_hat"]])
     tau_hat_I <- matrix(tau_hat[1:(J^2)], nrow = J, ncol = J)
     tau_hat_F <- matrix(tau_hat[(J^2 + 1):(J^2 + J^2)], nrow = J, ncol = J)
 
@@ -129,8 +129,8 @@ calc_cf <- function(data,
   }
 
   if(method_auto == "direct" | method == "direct") {
-    calc_cf_C(data, shock, parameters, tol, zeta, as.integer(maxiter), nthreads)
+    LogLT:::calc_cf_C(data, shock, parameters, tol, zeta, as.integer(maxiter), nthreads)
   } else {
-    calc_cf_mat_C(data, shock, parameters, tol, zeta, as.integer(maxiter), nthreads)
+    LogLT:::calc_cf_mat_C(data, shock, parameters, tol, zeta, as.integer(maxiter), nthreads)
   }
 }
