@@ -24,4 +24,5 @@ Imports:
     dplyr,
     expm,
     MASS,
-    Rcpp
+    Rcpp,
+    magrittr
