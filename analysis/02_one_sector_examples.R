@@ -212,7 +212,7 @@ for (s in 1:length(shock_size)) {
     shock <- baseline_shock
     # barrier shock for all imports of i, except for goods produced in i
     tmp <- array(shock$tau_hat, dim = c(J, J, S + 1))
-    tmp[-i, i, 1] <- 1 + shock_size[s]/100
+    tmp[-i, i, 2] <- 1 + shock_size[s]/100
     shock$tau_hat <- as.vector(tmp)
 
 
