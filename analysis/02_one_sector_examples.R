@@ -243,3 +243,97 @@ write_dta(welfare_final_shock,
           "analysis/data/welfare_final_shock.dta")
 
 rm(welfare_final_shock)
+
+# Individual trade barrier pair shocks -----------------------------------------
+
+welfare_ge <- vector(mode = "list", length = J) # will be list of lists
+welfare_ll <- vector(mode = "list", length = J)
+welfare_pair_interm_shocks <- list()
+shock_size <- c(1, 5, 10, 50, 100)
+
+for (s in 1:length(shock_size)) {
+  for (j in 1:J) {
+    for (i in 1:J) {
+      shock <- baseline_shock
+      # barrier shock for imports of j from i
+      tmp <- array(shock$tau_hat, dim = c(J, J, S + 1))
+      tmp[i, j, 1] <- 1 + shock_size[s]/100
+      shock$tau_hat <- as.vector(tmp)
+
+
+      welfare_ge[[i]][[j]] <- calc_cf(baseline_data,
+                                      shock, parameters, tol = 1e-7)$C_hat - 1
+
+      welfare_ll[[i]][[j]] <- calc_cf(baseline_data,
+                                      shock,
+                                      parameters,
+                                      method = "linearized_decomp",
+                                      maxiter = 50)
+    }
+  }
+
+  welfare_pair_interm_shocks[[s]] <-
+    expand_grid(shocked_exporter = locations,
+                shocked_importer = locations,
+                country = locations) %>%
+    mutate(
+      shock_size_pct = shock_size[s],
+      ge_nonlinear_C_hat = unlist(welfare_ge)
+    ) %>%
+    bind_cols(bind_rows(welfare_ll))
+}
+
+welfare_pair_interm_shocks <- bind_rows(welfare_pair_interm_shocks)
+
+# output to stata
+write_dta(welfare_pair_interm_shocks,
+          "analysis/data/welfare_pair_interm_shocks.dta")
+
+rm(welfare_pair_interm_shocks)
+
+# same for final goods
+
+welfare_ge <- vector(mode = "list", length = J) # will be list of lists
+welfare_ll <- vector(mode = "list", length = J)
+welfare_pair_final_shocks <- list()
+shock_size <- c(1, 5, 10, 50, 100)
+
+for (s in 1:length(shock_size)) {
+  for (j in 1:J) {
+    for (i in 1:J) {
+      shock <- baseline_shock
+      # barrier shock for imports of j from i
+      tmp <- array(shock$tau_hat, dim = c(J, J, S + 1))
+      tmp[i, j, 2] <- 1 + shock_size[s]/100
+      shock$tau_hat <- as.vector(tmp)
+
+
+      welfare_ge[[i]][[j]] <- calc_cf(baseline_data,
+                                      shock, parameters, tol = 1e-7)$C_hat - 1
+
+      welfare_ll[[i]][[j]] <- calc_cf(baseline_data,
+                                      shock,
+                                      parameters,
+                                      method = "linearized_decomp",
+                                      maxiter = 50)
+    }
+  }
+
+  welfare_pair_final_shocks[[s]] <-
+    expand_grid(shocked_exporter = locations,
+                shocked_importer = locations,
+                country = locations) %>%
+    mutate(
+      shock_size_pct = shock_size[s],
+      ge_nonlinear_C_hat = unlist(welfare_ge)
+    ) %>%
+    bind_cols(bind_rows(welfare_ll))
+}
+
+welfare_pair_final_shocks <- bind_rows(welfare_pair_final_shocks)
+
+# output to stata
+write_dta(welfare_pair_final_shocks,
+          "analysis/data/welfare_pair_final_shocks.dta")
+
+rm(welfare_pair_final_shocks)
